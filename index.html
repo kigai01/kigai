@@ -4,686 +4,606 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kigai Development</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Montserrat', 'sans-serif'],
+            body: ['Montserrat', 'sans-serif'],
+          },
+          animation: {
+            'float':    'float 6s ease-in-out infinite',
+            'float-d':  'float 8s ease-in-out infinite 2s',
+            'float-s':  'float 7s ease-in-out infinite 4s',
+            'fade-up':  'fadeUp 1s ease forwards',
+            'fade-up2': 'fadeUp 1s ease 0.2s forwards',
+            'fade-up3': 'fadeUp 1s ease 0.4s forwards',
+            'fade-up4': 'fadeUp 1s ease 0.6s forwards',
+            'spin-slow': 'spin 20s linear infinite',
+            'pulse-slow': 'pulse 4s ease-in-out infinite',
+            'marquee':  'marquee 30s linear infinite',
+          },
+          keyframes: {
+            float: {
+              '0%,100%': { transform: 'translateY(0px) rotate(0deg)' },
+              '33%':     { transform: 'translateY(-18px) rotate(1deg)' },
+              '66%':     { transform: 'translateY(-8px) rotate(-1deg)' },
+            },
+            fadeUp: {
+              from: { opacity: '0', transform: 'translateY(30px)' },
+              to:   { opacity: '1', transform: 'translateY(0)' },
+            },
+            marquee: {
+              from: { transform: 'translateX(0)' },
+              to:   { transform: 'translateX(-50%)' },
+            },
+          },
+        },
+      },
+    }
+  </script>
+
   <style>
-    :root {
-      --glass: rgba(255, 255, 255, 0.06);
-      --glass-border: rgba(255, 255, 255, 0.15);
-      --glass-hover: rgba(255, 255, 255, 0.12);
-      --accent: #00f5d4;
-      --accent2: #7b2fff;
-      --accent3: #ff2d78;
-      --text: #e8eaff;
-      --text-dim: rgba(232, 234, 255, 0.55);
-      --glow: 0 0 40px rgba(0, 245, 212, 0.25);
-      --glow2: 0 0 60px rgba(123, 47, 255, 0.3);
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow-x: hidden; scroll-behavior: smooth; }
+
+    /* Glass utility */
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .glass-strong {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .glass-dark {
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      min-height: 100vh;
-      background: #020010;
-      color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      overflow-x: hidden;
+    /* Gradient text */
+    .text-gradient {
+      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.6) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .text-gradient-warm {
+      background: linear-gradient(135deg, #fde68a 0%, #fca5a5 50%, #f0abfc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    /* ── CANVAS ── */
-    #bg-canvas {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    /* ── ORBS ── */
+    /* Orb glows */
     .orb {
-      position: fixed;
       border-radius: 50%;
       filter: blur(80px);
-      pointer-events: none;
-      z-index: 0;
-      animation: orbFloat 12s ease-in-out infinite;
-    }
-    .orb-1 {
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(0,245,212,0.35) 0%, transparent 70%);
-      top: -150px; left: -100px;
-      animation-delay: 0s;
-    }
-    .orb-2 {
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(123,47,255,0.3) 0%, transparent 70%);
-      bottom: -200px; right: -150px;
-      animation-delay: -4s;
-    }
-    .orb-3 {
-      width: 350px; height: 350px;
-      background: radial-gradient(circle, rgba(255,45,120,0.25) 0%, transparent 70%);
-      top: 40%; left: 50%;
-      transform: translateX(-50%);
-      animation-delay: -8s;
-    }
-    @keyframes orbFloat {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      33%       { transform: translate(30px, -40px) scale(1.05); }
-      66%       { transform: translate(-20px, 20px) scale(0.97); }
-    }
-
-    /* ── WRAPPER ── */
-    .wrapper {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 20px 80px;
-    }
-
-    /* ── NAV ── */
-    nav {
-      width: 100%;
-      max-width: 1100px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 28px 0;
-      position: relative;
-    }
-    .logo {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.35rem;
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-transform: uppercase;
-    }
-    .nav-badge {
-      font-size: 0.65rem;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 500;
-      letter-spacing: 0.3em;
-      color: var(--accent);
-      text-transform: uppercase;
-      border: 1px solid rgba(0,245,212,0.35);
-      padding: 5px 14px;
-      border-radius: 100px;
-      background: rgba(0,245,212,0.07);
-    }
-
-    /* ── HERO ── */
-    .hero {
-      max-width: 860px;
-      text-align: center;
-      padding: 60px 0 70px;
-      animation: fadeUp 1s ease both;
-    }
-    .hero-tag {
-      display: inline-block;
-      font-size: 0.7rem;
-      letter-spacing: 0.4em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 24px;
-    }
-    h1 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(2.4rem, 6vw, 4.4rem);
-      font-weight: 900;
-      line-height: 1.08;
-      letter-spacing: -0.01em;
-      margin-bottom: 22px;
-    }
-    h1 span {
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 55%, var(--accent3) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero p {
-      font-size: 1.1rem;
-      color: var(--text-dim);
-      line-height: 1.75;
-      max-width: 560px;
-      margin: 0 auto 40px;
-    }
-    .hero-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 15px 36px;
-      border-radius: 100px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      text-decoration: none;
-      box-shadow: 0 0 30px rgba(0,245,212,0.35), 0 0 60px rgba(123,47,255,0.2);
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .hero-cta:hover {
-      transform: translateY(-3px) scale(1.03);
-      box-shadow: 0 0 50px rgba(0,245,212,0.5), 0 0 90px rgba(123,47,255,0.35);
-    }
-
-    /* ── 3D ROTATING RING ── */
-    .ring-scene {
-      width: 260px; height: 260px;
-      perspective: 700px;
-      margin: 0 auto 60px;
-      animation: fadeUp 1.2s 0.2s ease both;
-    }
-    .ring {
-      width: 100%; height: 100%;
-      transform-style: preserve-3d;
-      animation: spinRing 14s linear infinite;
-      position: relative;
-    }
-    .ring-face {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 2px solid transparent;
-    }
-    .ring-face:nth-child(1) {
-      border-color: rgba(0,245,212,0.7);
-      box-shadow: 0 0 25px rgba(0,245,212,0.5), inset 0 0 25px rgba(0,245,212,0.1);
-      transform: rotateX(72deg);
-    }
-    .ring-face:nth-child(2) {
-      border-color: rgba(123,47,255,0.7);
-      box-shadow: 0 0 25px rgba(123,47,255,0.5), inset 0 0 25px rgba(123,47,255,0.1);
-      transform: rotateX(144deg);
-    }
-    .ring-face:nth-child(3) {
-      border-color: rgba(255,45,120,0.7);
-      box-shadow: 0 0 25px rgba(255,45,120,0.5), inset 0 0 25px rgba(255,45,120,0.1);
-      transform: rotateX(216deg);
-    }
-    .ring-face:nth-child(4) {
-      border-color: rgba(0,245,212,0.4);
-      box-shadow: 0 0 15px rgba(0,245,212,0.3);
-      transform: rotateX(288deg);
-    }
-    .ring-face:nth-child(5) {
-      border-color: rgba(123,47,255,0.4);
-      transform: rotateX(360deg);
-    }
-    .ring-core {
-      position: absolute;
-      inset: 30%;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(0,245,212,0.3) 0%, rgba(123,47,255,0.2) 50%, transparent 80%);
-      box-shadow: 0 0 40px rgba(0,245,212,0.4);
-      animation: corePulse 3s ease-in-out infinite;
-    }
-    @keyframes spinRing { to { transform: rotateY(360deg) rotateX(25deg); } }
-    @keyframes corePulse {
-      0%, 100% { opacity: 0.7; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.12); }
-    }
-
-    /* ── GLASS CARD ── */
-    .glass-card {
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(24px) saturate(160%);
-      -webkit-backdrop-filter: blur(24px) saturate(160%);
-      border-radius: 24px;
-      padding: 48px 52px;
-      width: 100%;
-      max-width: 620px;
-      position: relative;
-      overflow: hidden;
-      animation: fadeUp 1s 0.3s ease both;
-      box-shadow: 0 8px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.1);
-    }
-    .glass-card::before {
-      content: '';
-      position: absolute;
-      top: -1px; left: 20px; right: 20px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,245,212,0.6), rgba(123,47,255,0.6), transparent);
-    }
-    .glass-card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at top left, rgba(0,245,212,0.06) 0%, transparent 60%);
+      mix-blend-mode: screen;
       pointer-events: none;
     }
 
-    .card-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .card-sub {
-      font-size: 0.87rem;
-      color: var(--text-dim);
-      margin-bottom: 36px;
-    }
-
-    /* ── FORM ── */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-    .form-group.full { grid-column: 1 / -1; }
-
-    label {
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-
-    input, textarea, select {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 13px 16px;
-      color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
-      width: 100%;
-    }
-    input::placeholder, textarea::placeholder { color: rgba(232,234,255,0.3); }
-    input:focus, textarea:focus, select:focus {
-      border-color: rgba(0,245,212,0.5);
-      background: rgba(0,245,212,0.05);
-      box-shadow: 0 0 0 3px rgba(0,245,212,0.1), 0 0 20px rgba(0,245,212,0.1);
-    }
-    select option { background: #0d0025; }
-    textarea { resize: vertical; min-height: 110px; }
-
-    .submit-btn {
-      margin-top: 28px;
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.3s, box-shadow 0.3s;
-      box-shadow: 0 4px 30px rgba(0,245,212,0.3), 0 4px 60px rgba(123,47,255,0.2);
-    }
-    .submit-btn::before {
+    /* Noise texture overlay */
+    body::after {
       content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(0,245,212,0.45), 0 8px 80px rgba(123,47,255,0.3); }
-    .submit-btn:hover::before { opacity: 1; }
-    .submit-btn:active { transform: scale(0.98); }
-
-    /* ── SUCCESS ── */
-    .success-msg {
-      display: none;
-      text-align: center;
-      padding: 20px;
-      color: var(--accent);
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.9rem;
-      letter-spacing: 0.08em;
-      animation: fadeUp 0.5s ease;
-    }
-    .success-msg .check {
-      font-size: 3rem;
-      display: block;
-      margin-bottom: 14px;
-      filter: drop-shadow(0 0 20px var(--accent));
-    }
-
-    /* ── FEATURES GRID ── */
-    .features {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      max-width: 860px;
-      width: 100%;
-      margin-top: 60px;
-      animation: fadeUp 1s 0.5s ease both;
-    }
-    .feat-card {
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 18px;
-      padding: 28px 24px;
-      transition: transform 0.35s, background 0.35s, box-shadow 0.35s;
-      position: relative;
-      overflow: hidden;
-    }
-    .feat-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: var(--grad);
-      opacity: 0;
-      transition: opacity 0.35s;
-    }
-    .feat-card:hover { transform: translateY(-6px); background: var(--glass-hover); }
-    .feat-card:hover::before { opacity: 1; }
-    .feat-card:nth-child(1) { --grad: linear-gradient(90deg, var(--accent), var(--accent2)); box-shadow: 0 0 0 0 rgba(0,245,212,0); }
-    .feat-card:nth-child(2) { --grad: linear-gradient(90deg, var(--accent2), var(--accent3)); }
-    .feat-card:nth-child(3) { --grad: linear-gradient(90deg, var(--accent3), var(--accent)); }
-    .feat-card:hover { box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
-    .feat-icon {
-      font-size: 2rem;
-      margin-bottom: 14px;
-      display: block;
-      filter: drop-shadow(0 0 10px currentColor);
-    }
-    .feat-card h3 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-    .feat-card p {
-      font-size: 0.83rem;
-      color: var(--text-dim);
-      line-height: 1.65;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      margin-top: 80px;
-      text-align: center;
-      font-size: 0.78rem;
-      color: rgba(232,234,255,0.25);
-      letter-spacing: 0.1em;
-    }
-    footer span { color: var(--accent); }
-
-    /* ── PARTICLES ── */
-    .particles {
       position: fixed;
       inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      opacity: 0.3;
+      z-index: 2;
       pointer-events: none;
-      z-index: 0;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+    /* Card hover lift */
+    .card-hover {
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s ease;
+    }
+    .card-hover:hover { transform: translateY(-8px) scale(1.01); }
+
+    /* Shimmer button */
+    .btn-shimmer {
+      position: relative;
       overflow: hidden;
     }
-    .particle {
+    .btn-shimmer::before {
+      content: '';
       position: absolute;
-      border-radius: 50%;
-      animation: particleDrift linear infinite;
-      opacity: 0;
+      top: -50%; left: -75%;
+      width: 50%; height: 200%;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.6s ease;
     }
-    @keyframes particleDrift {
-      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
-      10%  { opacity: 1; }
-      90%  { opacity: 0.6; }
-      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
-    }
+    .btn-shimmer:hover::before { left: 125%; }
 
-    /* ── GRID LINES ── */
-    .grid-bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(0,245,212,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,245,212,0.04) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.5) 0%, transparent 70%);
+    /* Stats counter animation */
+    @keyframes countUp {
+      from { opacity: 0; transform: scale(0.8); }
+      to   { opacity: 1; transform: scale(1); }
     }
+    .stat-num { animation: countUp 0.8s ease forwards; }
 
-    /* ── UTILS ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(28px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 640px) {
-      .form-grid { grid-template-columns: 1fr; }
-      .features  { grid-template-columns: 1fr; }
-      .glass-card { padding: 32px 24px; }
-      h1 { font-size: 2rem; }
-    }
+    /* Section fade in on scroll */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
   </style>
 </head>
-<body>
 
-  <!-- Backgrounds -->
-  <div class="grid-bg"></div>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-  <canvas id="bg-canvas"></canvas>
-  <div class="particles" id="particles"></div>
+<body class="font-body text-white bg-black">
 
-  <div class="wrapper">
-    <!-- Nav -->
-    <nav>
-      <div class="logo">kigai development</div>
-      <div class="nav-badge">Development Studio</div>
-    </nav>
+  <!-- ═══════════════════════════════════════════
+       VIDEO BACKGROUND
+  ═══════════════════════════════════════════ -->
+  <div class="fixed inset-0 z-0">
+    <video
+      autoplay loop muted playsinline
+      class="absolute inset-0 w-full h-full object-cover"
+    >
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_055001_8e16d972-3b2b-441c-86ad-2901a54682f9.mp4" type="video/mp4" />
+    </video>
+    <!-- Dark overlay for readability -->
+    <div class="absolute inset-0 bg-black/40"></div>
+    <!-- Gradient fade at bottom -->
+    <div class="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black/60 to-transparent"></div>
+  </div>
 
-    <!-- Hero -->
-    <section class="hero">
-      <div class="hero-tag">✦ &nbsp; Next-Gen Digital Experiences &nbsp; ✦</div>
-      <h1>We Build<br /><span>Tomorrow's</span><br />Digital World</h1>
-      <p>Crafting cutting-edge software, immersive interfaces, and scalable systems that push the boundaries of what's possible.</p>
-      <a href="#contact" class="hero-cta">Start Your Project →</a>
-    </section>
+  <!-- Decorative floating orbs -->
+  <div class="fixed z-1 pointer-events-none" style="z-index:1;">
+    <div class="orb animate-float absolute w-96 h-96 bg-purple-500/20 top-20 -left-24"></div>
+    <div class="orb animate-float-d absolute w-80 h-80 bg-rose-400/15 top-1/3 right-0"></div>
+    <div class="orb animate-float-s absolute w-64 h-64 bg-sky-400/15 bottom-32 left-1/4"></div>
+  </div>
 
-    <!-- 3D Ring -->
-    <div class="ring-scene" aria-hidden="true">
-      <div class="ring">
-        <div class="ring-face"></div>
-        <div class="ring-face"></div>
-        <div class="ring-face"></div>
-        <div class="ring-face"></div>
-        <div class="ring-face"></div>
-        <div class="ring-core"></div>
+  <!-- ═══════════════════════════════════════════
+       NAVIGATION
+  ═══════════════════════════════════════════ -->
+  <nav class="fixed top-0 left-0 right-0 z-50 px-6 py-4">
+    <div class="max-w-7xl mx-auto glass rounded-2xl px-6 py-3 flex items-center justify-between">
+      <!-- Logo -->
+      <div class="flex items-center gap-3">
+        <img src="klogo.svg" alt="Kigai Development" class="h-10 w-auto" style="filter: drop-shadow(0 0 10px rgba(255,255,255,0.4)) brightness(10);" />
+        <span class="font-display font-700 text-lg tracking-tight">Kigai Development</span>
       </div>
+
+      <!-- Links (desktop) -->
+      <div class="hidden md:flex items-center gap-8 text-sm text-white/70 font-medium">
+        <a href="#work"     class="hover:text-white transition-colors">Work</a>
+        <a href="#services" class="hover:text-white transition-colors">Services</a>
+        <a href="#about"    class="hover:text-white transition-colors">About</a>
+        <a href="#contact"  class="hover:text-white transition-colors">Contact</a>
+      </div>
+
+      <!-- CTA -->
+      <button class="btn-shimmer glass-strong rounded-full px-5 py-2 text-sm font-medium hover:bg-white/15 transition-all duration-300">
+        Let's Talk →
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════
+       HERO SECTION
+  ═══════════════════════════════════════════ -->
+  <section class="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 pt-24 text-center">
+
+    <!-- Badge -->
+    <div class="animate-fade-up glass rounded-full px-4 py-1.5 text-xs text-white/70 tracking-widest uppercase mb-8 inline-flex items-center gap-2">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse-slow"></span>
+      Available for new projects
     </div>
 
-    <!-- Contact Form -->
-    <div class="glass-card" id="contact">
-      <div class="card-title">Холбоо барих</div>
-      <div class="card-sub">Tell us about your project and we'll respond within 24 hours.</div>
+    <!-- Headline -->
+    <h1 class="font-display font-800 leading-none mb-6 animate-fade-up2" style="opacity:0;">
+      <span class="block text-gradient"
+            style="font-size: clamp(3.5rem, 10vw, 9rem); letter-spacing: -0.04em;">
+        We craft
+      </span>
+      <span class="block text-gradient-warm"
+            style="font-size: clamp(3.5rem, 10vw, 9rem); letter-spacing: -0.04em;">
+        digital dreams
+      </span>
+    </h1>
 
-      <!-- IMPORTANT: Replace the action URL below with your actual Google Form action URL -->
-      <!-- To get it: Open your Google Form → ⋮ → Get pre-filled link → Fill & copy → Replace /viewform with /formResponse -->
-      <form id="contact-form"
-            action="https://docs.google.com/forms/d/e/1FAIpQLSeGHmxK5hCkD3Mc2P0QALFuwynRzot_Yhjr-A28DgNPefu-8Q/viewform?usp=publish-editor"
-            method="POST"
-            target="hidden_iframe"
-            onsubmit="handleSubmit()">
+    <!-- Sub -->
+    <p class="text-white/60 max-w-xl mx-auto text-lg leading-relaxed mb-10 animate-fade-up3" style="opacity:0;">
+      A boutique creative studio building immersive experiences,<br class="hidden sm:block"/>
+      bold brands, and products people fall in love with.
+    </p>
 
-        <div class="form-grid">
-          <!-- Replace 'entry.XXXXXXX' values with your actual Google Form entry IDs -->
-          <div class="form-group">
-            <label for="fname">Нэр</label>
-            <input type="text" id="fname" name="entry.1000001" placeholder="John" required />
+    <!-- Buttons -->
+    <div class="flex flex-wrap items-center justify-center gap-4 animate-fade-up4" style="opacity:0;">
+      <button class="btn-shimmer glass-strong rounded-full px-8 py-3.5 font-medium hover:bg-white/15 transition-all duration-300 text-white">
+        View Our Work
+      </button>
+      <button class="rounded-full px-8 py-3.5 font-medium text-white/70 hover:text-white transition-colors">
+        Learn more ↓
+      </button>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+      <div class="w-px h-12 bg-gradient-to-b from-white/40 to-transparent"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       MARQUEE TICKER
+  ═══════════════════════════════════════════ -->
+  <div class="relative z-10 py-5 glass overflow-hidden">
+    <div class="flex animate-marquee whitespace-nowrap">
+      <span class="text-white/30 text-xs tracking-widest uppercase font-medium mx-8">Brand Identity</span>
+      <span class="text-white/50 mx-4">✦</span>
+      <span class="text-white/30 text-xs tracking-widest uppercase font-medium mx-8">Motion Design</span>
+      <span class="text-white/50 mx-4">✦</span>
+      <span class="text-white/30 text-xs tracking-widest uppercase font-medium mx-8">Web Development</span>
+      <span class="text-white/50 mx-4">✦</span>
+      <span class="text-white/30 text-xs tracking-widest uppercase font-medium mx-8">UI / UX Design</span>
+      <span class="text-white/50 mx-4">✦</span>
+      <span class="text-white/30 text-xs tracking-widest uppercase font-medium mx-8">3D Visuals</span>
+      <span class="text-white/50 mx-4">✦</span>
+      <span class="text-white/30 text-xs tracking-widest uppercase font-medium mx-8">Creative Direction</span>
+      <span class="text-white/50 mx-4">✦</span>
+      <!-- Duplicate for seamless loop -->
+      <span class="text-white/30 text-xs tracking-widest uppercase font-medium mx-8">Brand Identity</span>
+      <span class="text-white/50 mx-4">✦</span>
+      <span class="text-white/30 text-xs tracking-widest uppercase font-medium mx-8">Motion Design</span>
+      <span class="text-white/50 mx-4">✦</span>
+      <span class="text-white/30 text-xs tracking-widest uppercase font-medium mx-8">Web Development</span>
+      <span class="text-white/50 mx-4">✦</span>
+      <span class="text-white/30 text-xs tracking-widest uppercase font-medium mx-8">UI / UX Design</span>
+      <span class="text-white/50 mx-4">✦</span>
+      <span class="text-white/30 text-xs tracking-widest uppercase font-medium mx-8">3D Visuals</span>
+      <span class="text-white/50 mx-4">✦</span>
+      <span class="text-white/30 text-xs tracking-widest uppercase font-medium mx-8">Creative Direction</span>
+      <span class="text-white/50 mx-4">✦</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       STATS ROW
+  ═══════════════════════════════════════════ -->
+  <section class="relative z-10 py-20 px-6">
+    <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 reveal">
+      <div class="glass rounded-3xl p-6 text-center card-hover">
+        <div class="font-display font-800 text-5xl text-gradient mb-1" style="letter-spacing:-0.04em;">140+</div>
+        <div class="text-white/50 text-sm">Projects Shipped</div>
+      </div>
+      <div class="glass rounded-3xl p-6 text-center card-hover">
+        <div class="font-display font-800 text-5xl text-gradient mb-1" style="letter-spacing:-0.04em;">8yr</div>
+        <div class="text-white/50 text-sm">In The Industry</div>
+      </div>
+      <div class="glass rounded-3xl p-6 text-center card-hover">
+        <div class="font-display font-800 text-5xl text-gradient mb-1" style="letter-spacing:-0.04em;">98%</div>
+        <div class="text-white/50 text-sm">Client Satisfaction</div>
+      </div>
+      <div class="glass rounded-3xl p-6 text-center card-hover">
+        <div class="font-display font-800 text-5xl text-gradient mb-1" style="letter-spacing:-0.04em;">24</div>
+        <div class="text-white/50 text-sm">Awards Won</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SERVICES
+  ═══════════════════════════════════════════ -->
+  <section id="services" class="relative z-10 py-20 px-6">
+    <div class="max-w-6xl mx-auto">
+
+      <!-- Section label -->
+      <div class="flex items-center gap-4 mb-12 reveal">
+        <div class="w-8 h-px bg-white/30"></div>
+        <span class="text-white/50 text-xs tracking-widest uppercase">What we do</span>
+      </div>
+
+      <h2 class="font-display font-800 text-5xl md:text-7xl text-gradient leading-none mb-16 reveal"
+          style="letter-spacing:-0.04em;">
+        Services
+      </h2>
+
+      <div class="grid md:grid-cols-3 gap-4 reveal">
+
+        <!-- Card 1 -->
+        <div class="glass rounded-3xl p-8 card-hover group">
+          <div class="w-12 h-12 glass-strong rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10-4.48 10-10 10S2 17.52 2 12z"/>
+              <path d="M8 12l3 3 5-5"/>
+            </svg>
           </div>
+          <h3 class="font-display font-700 text-xl mb-3">Brand &amp; Identity</h3>
+          <p class="text-white/50 text-sm leading-relaxed">
+            Crafting distinctive visual identities that make your brand impossible to ignore across every touchpoint.
+          </p>
+          <div class="mt-6 text-white/30 text-sm group-hover:text-white/70 transition-colors">Explore →</div>
+        </div>
 
-          <div class="form-group">
-            <label for="lname">Овог</label>
-            <input type="text" id="lname" name="entry.1000002" placeholder="Doe" required />
+        <!-- Card 2 -->
+        <div class="glass rounded-3xl p-8 card-hover group">
+          <div class="w-12 h-12 glass-strong rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="3"/>
+              <path d="M3 9h18M9 21V9"/>
+            </svg>
           </div>
+          <h3 class="font-display font-700 text-xl mb-3">Web &amp; Digital</h3>
+          <p class="text-white/50 text-sm leading-relaxed">
+            Immersive web experiences engineered for performance, built for humans, and designed to convert.
+          </p>
+          <div class="mt-6 text-white/30 text-sm group-hover:text-white/70 transition-colors">Explore →</div>
+        </div>
 
-          <div class="form-group full">
-            <label for="email">Имейл хаяг</label>
-            <input type="email" id="email" name="entry.1000003" placeholder="john@example.com" required />
+        <!-- Card 3 -->
+        <div class="glass rounded-3xl p-8 card-hover group">
+          <div class="w-12 h-12 glass-strong rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+            </svg>
           </div>
+          <h3 class="font-display font-700 text-xl mb-3">Motion &amp; 3D</h3>
+          <p class="text-white/50 text-sm leading-relaxed">
+            Breathing life into ideas through fluid animation, cinematic motion, and dimensional storytelling.
+          </p>
+          <div class="mt-6 text-white/30 text-sm group-hover:text-white/70 transition-colors">Explore →</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-          <div class="form-group full">
-            <label for="message">Зурвас</label>
-            <textarea id="message" name="entry.1000006" placeholder="Describe your project, goals, and timeline…" required></textarea>
+  <!-- ═══════════════════════════════════════════
+       FEATURED WORK
+  ═══════════════════════════════════════════ -->
+  <section id="work" class="relative z-10 py-20 px-6">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="flex items-center justify-between mb-12 reveal">
+        <div>
+          <div class="flex items-center gap-4 mb-3">
+            <div class="w-8 h-px bg-white/30"></div>
+            <span class="text-white/50 text-xs tracking-widest uppercase">Selected work</span>
+          </div>
+          <h2 class="font-display font-800 text-5xl md:text-7xl text-gradient leading-none" style="letter-spacing:-0.04em;">
+            Projects
+          </h2>
+        </div>
+        <button class="hidden md:block btn-shimmer glass rounded-full px-6 py-2.5 text-sm text-white/70 hover:text-white transition-colors">
+          View All →
+        </button>
+      </div>
+
+      <!-- Project grid -->
+      <div class="grid md:grid-cols-2 gap-4 reveal">
+
+        <!-- Project 1 — large -->
+        <div class="glass rounded-3xl overflow-hidden card-hover group md:row-span-2">
+          <div class="relative h-64 md:h-80 overflow-hidden"
+               style="background: linear-gradient(135deg, rgba(139,92,246,0.3) 0%, rgba(59,130,246,0.2) 100%);">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-24 h-24 rounded-full glass-strong animate-spin-slow flex items-center justify-center">
+                <div class="w-12 h-12 rounded-full bg-white/10"></div>
+              </div>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+          </div>
+          <div class="p-7">
+            <div class="text-white/40 text-xs tracking-widest uppercase mb-2">Brand · Web · Motion</div>
+            <h3 class="font-display font-700 text-2xl mb-2">Aether Studio</h3>
+            <p class="text-white/50 text-sm leading-relaxed">
+              Complete rebrand and digital presence for a leading creative studio, including identity system, website, and motion language.
+            </p>
+            <div class="mt-5 inline-flex items-center gap-2 text-sm text-white/40 group-hover:text-white/80 transition-colors">
+              Case Study <span>→</span>
+            </div>
           </div>
         </div>
 
-        <button type="submit" class="submit-btn">ИЛГЭЭХ</button>
-      </form>
+        <!-- Project 2 -->
+        <div class="glass rounded-3xl overflow-hidden card-hover group">
+          <div class="relative h-40 overflow-hidden"
+               style="background: linear-gradient(135deg, rgba(236,72,153,0.25) 0%, rgba(251,146,60,0.2) 100%);">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-16 h-16 rounded-2xl glass-strong animate-float"></div>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="text-white/40 text-xs tracking-widest uppercase mb-1">UI / UX · Web</div>
+            <h3 class="font-display font-700 text-xl mb-1">Solara App</h3>
+            <p class="text-white/50 text-sm">Mobile-first productivity app with adaptive AI interface.</p>
+          </div>
+        </div>
 
-      <div class="success-msg" id="success">
-        <span class="check">✦</span>
-        Message Received!<br />
-        <small style="font-family:'Outfit',sans-serif;font-size:0.82rem;color:var(--text-dim);letter-spacing:0.05em;margin-top:8px;display:block;">
-          We'll get back to you within 24 hours.
-        </small>
+        <!-- Project 3 -->
+        <div class="glass rounded-3xl overflow-hidden card-hover group">
+          <div class="relative h-40 overflow-hidden"
+               style="background: linear-gradient(135deg, rgba(16,185,129,0.25) 0%, rgba(6,182,212,0.2) 100%);">
+            <div class="absolute inset-0 flex items-center justify-center gap-3">
+              <div class="w-10 h-10 rounded-full glass-strong animate-float-d"></div>
+              <div class="w-6 h-6 rounded-full glass animate-float"></div>
+              <div class="w-14 h-14 rounded-full glass-strong animate-float-s"></div>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="text-white/40 text-xs tracking-widest uppercase mb-1">3D · Motion</div>
+            <h3 class="font-display font-700 text-xl mb-1">Nova Launch</h3>
+            <p class="text-white/50 text-sm">Product launch campaign with full 3D assets and motion graphics.</p>
+          </div>
+        </div>
+
       </div>
     </div>
+  </section>
 
-    <!-- Features -->
-    <div class="features">
-      <div class="feat-card">
-        <span class="feat-icon" style="color:var(--accent)">⬡</span>
-        <h3>Full-Stack Engineering</h3>
-        <p>From pixel-perfect frontends to robust cloud backends, we own the entire stack.</p>
-      </div>
-      <div class="feat-card">
-        <span class="feat-icon" style="color:var(--accent2)">◈</span>
-        <h3>Motion & Experience</h3>
-        <p>Immersive 3D interfaces, micro-animations, and interactions that feel alive.</p>
-      </div>
-      <div class="feat-card">
-        <span class="feat-icon" style="color:var(--accent3)">✦</span>
-        <h3>Scalable Architecture</h3>
-        <p>Systems built for growth — high availability, fast performance, zero downtime.</p>
+  <!-- ═══════════════════════════════════════════
+       TESTIMONIAL
+  ═══════════════════════════════════════════ -->
+  <section class="relative z-10 py-20 px-6">
+    <div class="max-w-4xl mx-auto text-center reveal">
+      <div class="glass-dark rounded-3xl p-10 md:p-16">
+        <div class="text-4xl md:text-6xl mb-8 opacity-30 font-serif">"</div>
+        <blockquote class="font-display font-600 text-2xl md:text-4xl text-gradient leading-tight mb-8"
+                    style="letter-spacing: -0.02em;">
+          Kigai Development didn't just build us a website — they built us a universe.
+        </blockquote>
+        <div class="flex items-center justify-center gap-4">
+          <div class="w-10 h-10 rounded-full glass-strong"></div>
+          <div class="text-left">
+            <div class="text-sm font-medium">Aria Chen</div>
+            <div class="text-white/40 text-xs">CEO, Aether Studio</div>
+          </div>
+        </div>
       </div>
     </div>
+  </section>
 
-    <!-- Footer -->
-    <footer>
-      <p>© 2026 <span>Kigai Development</span> — All rights reserved.</p>
-    </footer>
-  </div>
+  <!-- ═══════════════════════════════════════════
+       ABOUT / PROCESS
+  ═══════════════════════════════════════════ -->
+  <section id="about" class="relative z-10 py-20 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid md:grid-cols-2 gap-16 items-center">
 
-  <!-- Hidden iframe for Google Forms AJAX-style submit -->
-  <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+        <div class="reveal">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-8 h-px bg-white/30"></div>
+            <span class="text-white/50 text-xs tracking-widest uppercase">How we work</span>
+          </div>
+          <h2 class="font-display font-800 text-5xl md:text-6xl text-gradient leading-none mb-6"
+              style="letter-spacing:-0.04em;">
+            Process<br/>built for<br/>impact.
+          </h2>
+          <p class="text-white/50 leading-relaxed">
+            Every project begins with deep listening. We immerse ourselves in your world before touching a single pixel — because the best design solves real problems.
+          </p>
+        </div>
 
+        <div class="space-y-3 reveal">
+          <div class="glass rounded-2xl p-5 flex items-center gap-5 card-hover">
+            <div class="w-10 h-10 glass-strong rounded-xl flex items-center justify-center flex-shrink-0 font-display font-700 text-sm">01</div>
+            <div>
+              <div class="font-medium mb-0.5">Discover</div>
+              <div class="text-white/40 text-sm">Deep-dive into your brand, users, and goals.</div>
+            </div>
+          </div>
+          <div class="glass rounded-2xl p-5 flex items-center gap-5 card-hover">
+            <div class="w-10 h-10 glass-strong rounded-xl flex items-center justify-center flex-shrink-0 font-display font-700 text-sm">02</div>
+            <div>
+              <div class="font-medium mb-0.5">Define</div>
+              <div class="text-white/40 text-sm">Align on strategy, direction, and success metrics.</div>
+            </div>
+          </div>
+          <div class="glass rounded-2xl p-5 flex items-center gap-5 card-hover">
+            <div class="w-10 h-10 glass-strong rounded-xl flex items-center justify-center flex-shrink-0 font-display font-700 text-sm">03</div>
+            <div>
+              <div class="font-medium mb-0.5">Design</div>
+              <div class="text-white/40 text-sm">Craft, iterate, and refine with you in the loop.</div>
+            </div>
+          </div>
+          <div class="glass rounded-2xl p-5 flex items-center gap-5 card-hover">
+            <div class="w-10 h-10 glass-strong rounded-xl flex items-center justify-center flex-shrink-0 font-display font-700 text-sm">04</div>
+            <div>
+              <div class="font-medium mb-0.5">Deploy</div>
+              <div class="text-white/40 text-sm">Launch with precision. Measure. Evolve.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CTA / CONTACT
+  ═══════════════════════════════════════════ -->
+  <section id="contact" class="relative z-10 py-24 px-6">
+    <div class="max-w-3xl mx-auto text-center reveal">
+      <div class="glass-dark rounded-[2.5rem] p-10 md:p-16">
+
+        <div class="w-16 h-16 glass-strong rounded-2xl flex items-center justify-center mx-auto mb-8 animate-float">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          </svg>
+        </div>
+
+        <h2 class="font-display font-800 text-5xl md:text-7xl text-gradient leading-none mb-6"
+            style="letter-spacing:-0.04em;">
+          Start a<br/>project
+        </h2>
+        <p class="text-white/50 mb-10 leading-relaxed">
+          Have an idea? Let's turn it into something extraordinary.<br/>
+          We typically respond within 24 hours.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <input
+            type="email"
+            placeholder="your@email.com"
+            class="glass rounded-full px-6 py-3.5 text-sm text-white placeholder-white/30 outline-none flex-1 max-w-xs mx-auto sm:mx-0 focus:ring-1 focus:ring-white/20 transition-all"
+          />
+          <button class="btn-shimmer glass-strong rounded-full px-8 py-3.5 font-medium text-sm hover:bg-white/15 transition-all duration-300 whitespace-nowrap">
+            Get in Touch →
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════ -->
+  <footer class="relative z-10 px-6 py-8">
+    <div class="max-w-6xl mx-auto glass rounded-2xl px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <img src="klogo.svg" alt="Kigai Development" class="h-8 w-auto" style="filter: drop-shadow(0 0 8px rgba(255,255,255,0.35)) brightness(10);" />
+      <span class="text-white/30 text-xs">© 2026 Kigai Development. All rights reserved.</span>
+      <div class="flex items-center gap-6 text-white/40 text-xs">
+        <a href="#" class="hover:text-white/80 transition-colors">Twitter</a>
+        <a href="#" class="hover:text-white/80 transition-colors">Instagram</a>
+        <a href="#" class="hover:text-white/80 transition-colors">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════
+       SCROLL REVEAL + PARALLAX
+  ═══════════════════════════════════════════ -->
   <script>
-    /* ── PARTICLES ── */
-    (function() {
-      const container = document.getElementById('particles');
-      const colors = ['rgba(0,245,212,', 'rgba(123,47,255,', 'rgba(255,45,120,'];
-      for (let i = 0; i < 35; i++) {
-        const p = document.createElement('div');
-        p.classList.add('particle');
-        const size = Math.random() * 4 + 1;
-        const c = colors[Math.floor(Math.random() * colors.length)];
-        const opacity = (Math.random() * 0.4 + 0.2).toFixed(2);
-        p.style.cssText = `
-          width:${size}px;height:${size}px;
-          left:${Math.random()*100}%;
-          background:${c}${opacity});
-          box-shadow:0 0 ${size*4}px ${c}0.8);
-          animation-duration:${Math.random()*12+8}s;
-          animation-delay:${Math.random()*-15}s;
-        `;
-        container.appendChild(p);
-      }
-    })();
-
-    /* ── CANVAS STARS ── */
-    (function() {
-      const canvas = document.getElementById('bg-canvas');
-      const ctx = canvas.getContext('2d');
-      let stars = [];
-
-      function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-      resize();
-      window.addEventListener('resize', () => { resize(); initStars(); });
-
-      function initStars() {
-        stars = [];
-        const n = Math.floor((canvas.width * canvas.height) / 8000);
-        for (let i = 0; i < n; i++) {
-          stars.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            r: Math.random() * 1.2 + 0.2,
-            a: Math.random(),
-            speed: Math.random() * 0.003 + 0.001,
-            phase: Math.random() * Math.PI * 2,
-          });
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(el => {
+        if (el.isIntersecting) {
+          el.target.classList.add('visible');
         }
-      }
-      initStars();
+      });
+    }, { threshold: 0.15 });
 
-      let t = 0;
-      function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        t += 0.01;
-        stars.forEach(s => {
-          const alpha = s.a * (0.5 + 0.5 * Math.sin(t * s.speed * 100 + s.phase));
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(200,210,255,${alpha})`;
-          ctx.fill();
-        });
-        requestAnimationFrame(draw);
-      }
-      draw();
-    })();
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    /* ── MOUSE PARALLAX ── */
-    document.addEventListener('mousemove', e => {
-      const mx = (e.clientX / window.innerWidth - 0.5) * 30;
-      const my = (e.clientY / window.innerHeight - 0.5) * 30;
+    // Subtle parallax on hero orbs
+    document.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 20;
+      const y = (e.clientY / window.innerHeight - 0.5) * 20;
       document.querySelectorAll('.orb').forEach((orb, i) => {
-        const factor = (i + 1) * 0.4;
-        orb.style.transform = `translate(${mx * factor}px, ${my * factor}px)`;
+        const factor = (i + 1) * 0.5;
+        orb.style.transform = `translate(${x * factor}px, ${y * factor}px)`;
       });
     });
-
-    /* ── FORM SUBMIT ── */
-    function handleSubmit() {
-      setTimeout(() => {
-        document.getElementById('contact-form').style.display = 'none';
-        document.getElementById('success').style.display = 'block';
-      }, 700);
-    }
   </script>
+
 </body>
 </html>
